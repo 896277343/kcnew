@@ -14,46 +14,52 @@ export function Footer() {
           <div className="flex flex-col gap-6 not-prose">
             <Link href="/">
               <h3 className="sr-only">{siteConfig.site_name}</h3>
-              <Image
-                src={Logo}
-                alt="Logo"
-                className="dark:invert"
-                width={42}
-                height={26.44}
-              />
+              <div className="flex items-center gap-2">
+                <Image
+                  src={Logo}
+                  alt="Logo"
+                  className="dark:invert"
+                  width={42}
+                  height={26.44}
+                />
+                <span className="text-xl font-bold">{siteConfig.site_name}</span>
+              </div>
             </Link>
-            <p>{siteConfig.site_description}</p>
+            <p className="max-w-xs">{siteConfig.site_description}</p>
+            <div className="text-sm text-muted-foreground space-y-1">
+              <p>Email: sales@kcinduction.com</p>
+              <p>Address: Industrial Zone, Zhengzhou, China</p>
+            </div>
           </div>
           <div className="flex flex-col gap-2 text-sm">
-            <h5 className="font-medium text-base">Website</h5>
+            <h5 className="font-medium text-base underline underline-offset-8 decoration-blue-600 mb-2">Company</h5>
             {Object.entries(mainMenu).map(([key, href]) => (
               <Link
-                className="hover:underline underline-offset-4"
+                className="hover:text-blue-600 transition-colors capitalize"
                 key={href}
                 href={href}
               >
-                {key.charAt(0).toUpperCase() + key.slice(1)}
+                {key}
               </Link>
             ))}
           </div>
           <div className="flex flex-col gap-2 text-sm">
-            <h5 className="font-medium text-base">Blog</h5>
+            <h5 className="font-medium text-base underline underline-offset-8 decoration-blue-600 mb-2">Products</h5>
             {Object.entries(contentMenu).map(([key, href]) => (
               <Link
-                className="hover:underline underline-offset-4"
+                className="hover:text-blue-600 transition-colors capitalize"
                 key={href}
                 href={href}
               >
-                {key.charAt(0).toUpperCase() + key.slice(1)}
+                {key}
               </Link>
             ))}
           </div>
         </Container>
-        <Container className="border-t not-prose flex flex-col md:flex-row md:gap-2 gap-6 justify-between md:items-center">
+        <Container className="border-t not-prose flex flex-col md:flex-row md:gap-2 gap-6 justify-between md:items-center py-8">
           <ThemeToggle />
-          <p className="text-muted-foreground">
-            &copy; <a href="https://9d8.dev">9d8</a>. All rights reserved.
-            2025-present.
+          <p className="text-muted-foreground text-sm">
+            &copy; {new Date().getFullYear()} {siteConfig.site_name}. All rights reserved.
           </p>
         </Container>
       </Section>

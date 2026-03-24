@@ -41,15 +41,15 @@ export function Nav({ className, children, id }: NavProps) {
         <div className="flex items-center gap-2">
           <div className="mx-2 hidden md:flex">
             {Object.entries(mainMenu).map(([key, href]) => (
-              <Button key={href} asChild variant="ghost" size="sm">
+              <Button key={href} asChild variant="ghost" size="sm" className="capitalize">
                 <Link href={href}>
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
+                  {key}
                 </Link>
               </Button>
             ))}
           </div>
-          <Button asChild className="hidden sm:flex">
-            <Link href="https://github.com/9d8dev/next-wp">Get Started</Link>
+          <Button asChild className="hidden sm:flex bg-blue-700 hover:bg-blue-800">
+            <Link href="/pages/contact">Contact Us</Link>
           </Button>
           <MobileNav />
         </div>
