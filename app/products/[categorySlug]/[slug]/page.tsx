@@ -2,7 +2,10 @@ import { Article, Container, Prose } from "@/components/craft";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ProductCategoryNav } from "@/components/products/product-category-nav";
+import { ProductGallery } from "@/components/products/product-gallery";
 import { stripHtml } from "@/lib/metadata";
+import { getProductGalleryImages } from "@/lib/product-gallery";
 import { getAllCategories, getPostBySlug, getPostsPaginated } from "@/lib/wordpress";
 import type { Post } from "@/lib/wordpress.d";
 import { siteConfig } from "@/site.config";
@@ -91,6 +94,10 @@ export default async function Page({
 
   const title = stripHtml(post.title.rendered);
   const heroImageUrl = getPostImageUrl(post);
+  const galleryImages = getProductGalleryImages({
+    title,
+    fallbackImages: heroImageUrl ? [heroImageUrl] : [],
+  });
 
   const categoryPostsResponse = await getPostsPaginated(1, 60, {
     category: String(category.id),
@@ -148,19 +155,7 @@ export default async function Page({
       <section className="bg-black">
         <Container className="py-12 md:py-16">
           <div className="grid gap-10 lg:grid-cols-[1fr_420px] items-start">
-            <div className="bg-white rounded-2xl shadow-2xl p-4 md:p-6">
-              {heroImageUrl ? (
-                <Image
-                  src={heroImageUrl}
-                  alt={title}
-                  width={1200}
-                  height={900}
-                  className="w-full h-auto object-contain"
-                />
-              ) : (
-                <div className="aspect-[4/3] w-full rounded-xl bg-slate-100" />
-              )}
-            </div>
+            <ProductGallery images={galleryImages} />
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-8 md:p-10 text-white">
               {(prevPost || nextPost) && (
@@ -255,17 +250,21 @@ export default async function Page({
             </div>
           </div>
 
-          <div className="mt-14 md:mt-18 rounded-2xl border border-white/10 bg-white/5 p-10 md:p-12 text-white">
-            <Prose className="text-white [&_a]:text-blue-300 [&_a]:decoration-blue-300/40">
-              <h2>Product Overview</h2>
-              {post.excerpt?.rendered && (
-                <p className="text-white/80">{stripHtml(post.excerpt.rendered)}</p>
-              )}
-            </Prose>
-            <Article
-              className="text-white [&_a]:text-blue-300 [&_a]:decoration-blue-300/40"
-              dangerouslySetInnerHTML={{ __html: post.content.rendered }}
-            />
+          <div className="mt-14 md:mt-18 grid gap-10 lg:grid-cols-[1fr_320px] items-start">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-10 md:p-12 text-white">
+              <Prose className="text-white [&_a]:text-blue-300 [&_a]:decoration-blue-300/40">
+                <h2>Product Overview</h2>
+                {post.excerpt?.rendered && (
+                  <p className="text-white/80">{stripHtml(post.excerpt.rendered)}</p>
+                )}
+              </Prose>
+              <Article
+                className="text-white [&_a]:text-blue-300 [&_a]:decoration-blue-300/40"
+                dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+              />
+            </div>
+
+            <ProductCategoryNav currentSlug={categorySlug} />
           </div>
         </Container>
       </section>

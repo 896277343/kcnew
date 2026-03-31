@@ -1,57 +1,27 @@
 import { Container } from "@/components/craft";
-import { getAllCategories, getPostsPaginated } from "@/lib/wordpress";
-import { stripHtml } from "@/lib/metadata";
-import type { Post, Category } from "@/lib/wordpress.d";
+import { productsCatalog } from "@/lib/products-catalog";
+import defaultProductImage from "@/pics/products/Medium Frequency Induction Heating Equipment.jpg";
 import Image from "next/image";
 import Link from "next/link";
 
 export const dynamic = "auto";
 export const revalidate = 3600;
 
-function getPostImageUrl(post: Post): string | null {
-  return post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ?? null;
-}
-
 export default async function ProductsPage() {
-  const categories = await getAllCategories();
-  const parentCategories = categories.filter((cat) => cat.parent === 0 && cat.count > 0);
-
-  const heroPosts = await getPostsPaginated(1, 1);
-  const heroImageUrl = heroPosts.data[0] ? getPostImageUrl(heroPosts.data[0]) : null;
-
-  const sections: Array<{
-    category: Category;
-    posts: Post[];
-    imageUrl: string | null;
-  }> = await Promise.all(
-    parentCategories.map(async (category) => {
-      const postsResponse = await getPostsPaginated(1, 10, {
-        category: String(category.id),
-      });
-
-      const posts = postsResponse.data;
-      const imageUrl = posts.map(getPostImageUrl).find(Boolean) ?? null;
-
-      return { category, posts, imageUrl };
-    })
-  );
+  const heroImage = productsCatalog[0]?.image || defaultProductImage;
 
   return (
     <main>
       <section className="relative h-56 md:h-72 bg-slate-950 text-white overflow-hidden">
-        {heroImageUrl ? (
-          <Image
-            src={heroImageUrl}
-            alt="Products"
-            fill
-            priority
-            className="object-cover"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900 to-slate-800" />
-        )}
+        <Image
+          src={heroImage}
+          alt="Products"
+          fill
+          priority
+          className="object-cover"
+        />
         <div className="absolute inset-0 bg-black/55" />
-        <Container className="relative h-full flex flex-col justify-center">
+        <Container className="relative h-full flex flex-col justify-center max-w-6xl">
           <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
             Products
           </h1>
@@ -65,59 +35,89 @@ export default async function ProductsPage() {
         </Container>
       </section>
 
-      {sections.length > 0 ? (
+      {productsCatalog.length > 0 ? (
         <div className="bg-black">
-          {sections.map(({ category, posts, imageUrl }) => (
-            <section key={category.id} className="border-t border-white/10">
-              <Container className="py-12 md:py-16">
-                <div className="grid gap-10 md:grid-cols-[420px_1fr] items-start">
-                  <div className="bg-white rounded-2xl shadow-2xl p-4 md:p-6">
-                    {imageUrl ? (
-                      <Image
-                        src={imageUrl}
-                        alt={category.name}
-                        width={900}
-                        height={700}
-                        className="w-full h-auto object-contain"
-                      />
-                    ) : (
-                      <div className="aspect-[4/3] w-full rounded-xl bg-slate-100" />
-                    )}
-                  </div>
+          {productsCatalog.map((category, categoryIndex) => (
+            <section key={category.slug} className="border-t border-white/10">
+              <Container className="py-12 md:py-16 max-w-6xl">
+                <div className="rounded-2xl bg-[#0b0f14] border border-white/10 p-6 md:p-10">
+                  <div className="grid gap-10 md:grid-cols-[420px_1fr] items-start">
+                    <div className="rounded-2xl bg-white p-4 md:p-6 shadow-2xl border-4 border-white/50">
+                      <div className="aspect-[4/3] w-full rounded-xl bg-slate-100 overflow-hidden flex items-center justify-center">
+                        <Image
+                          src={category.image}
+                          alt={category.name}
+                          width={900}
+                          height={700}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    </div>
 
-                  <div className="min-w-0">
-                    <h2 className="text-2xl md:text-3xl font-semibold text-white/90">
-                      {category.name}
-                    </h2>
-                    <div className="mt-4 h-px bg-white/15" />
+                    <div className="min-w-0 text-white">
+                      <h2 className="text-2xl md:text-3xl font-semibold text-white/90">
+                        {category.name}
+                      </h2>
+                      <div className="mt-4 h-px bg-white/15" />
 
-                    {posts.length > 0 ? (
-                      <ul className="mt-6 space-y-3">
-                        {posts.map((post) => (
-                          <li key={post.id} className="min-w-0">
-                            <Link
-                              href={`/products/${category.slug}/${post.slug}`}
-                              className="block text-white/65 hover:text-white transition-colors truncate"
-                              title={stripHtml(post.title?.rendered || "Untitled")}
-                            >
-                              {stripHtml(post.title?.rendered || "Untitled")}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="mt-6 text-white/60">
-                        No products found in this category.
-                      </p>
-                    )}
+                      {category.products.length > 0 ? (
+                        <>
+                          <ul className="mt-6 space-y-3">
+                            {category.products.map((p) => (
+                              <li key={p.href} className="min-w-0">
+                                <Link
+                                  href={p.href}
+                                  className="block text-white/70 hover:text-white transition-colors leading-relaxed"
+                                  title={p.title}
+                                >
+                                  {p.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
 
-                    <div className="mt-8">
-                      <Link
-                        href={`/products/${category.slug}`}
-                        className="inline-flex items-center gap-3 rounded-md bg-slate-600 px-6 py-3 font-semibold text-white hover:bg-slate-500 transition-colors"
-                      >
-                        Read More <span aria-hidden="true">—</span>
-                      </Link>
+                          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {category.products.slice(0, 3).map((p) => {
+                              return (
+                                <Link
+                                  key={p.href}
+                                  href={p.href}
+                                  className="rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors overflow-hidden"
+                                  title={p.title}
+                                >
+                                  <div className="bg-white">
+                                    <Image
+                                      src={p.image}
+                                      alt={p.title}
+                                      width={600}
+                                      height={450}
+                                      className="w-full h-32 object-contain"
+                                    />
+                                  </div>
+                                  <div className="p-4">
+                                    <p className="text-sm font-medium text-white/85 line-clamp-2">
+                                      {p.title}
+                                    </p>
+                                  </div>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </>
+                      ) : (
+                        <p className="mt-6 text-white/60">
+                          No products found in this category.
+                        </p>
+                      )}
+
+                      <div className="mt-8">
+                        <Link
+                          href={`/products/${category.slug}`}
+                          className="inline-flex items-center gap-3 rounded-md bg-[#3b6b84] px-6 py-3 font-semibold text-white hover:bg-[#457a96] transition-colors"
+                        >
+                          Read More <span aria-hidden="true">—</span>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -127,11 +127,11 @@ export default async function ProductsPage() {
         </div>
       ) : (
         <section className="bg-black">
-          <Container className="py-20">
+          <Container className="py-20 max-w-6xl">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-white">
               <h2 className="text-2xl font-semibold">No Products Found</h2>
               <p className="mt-3 text-white/70">
-                Configure WordPress or add product categories and posts.
+                Add product categories and products.
               </p>
               <div className="mt-8">
                 <Link
@@ -147,7 +147,7 @@ export default async function ProductsPage() {
       )}
 
       <section className="bg-slate-950 border-t border-white/10">
-        <Container className="py-14 md:py-16">
+        <Container className="py-14 md:py-16 max-w-6xl">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-10 md:p-12 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="text-white">
               <h2 className="text-2xl md:text-3xl font-semibold">
