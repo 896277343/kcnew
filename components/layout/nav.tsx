@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { MobileNav } from "@/components/nav/mobile-nav";
 import { mainMenu } from "@/menu.config";
 import { siteConfig } from "@/site.config";
 import { cn } from "@/lib/utils";
@@ -51,7 +50,6 @@ export function Nav({ className, children, id }: NavProps) {
           <Button asChild className="hidden sm:flex bg-blue-700 hover:bg-blue-800">
             <Link href="/pages/contact">Contact Us</Link>
           </Button>
-          <MobileNav />
         </div>
       </div>
     </nav>

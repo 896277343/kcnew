@@ -1,9 +1,6 @@
 // Craft Imports
 import { Section, Container } from "@/components/craft";
 
-// React
-import React from "react";
-
 // Next.js Imports
 import Link from "next/link";
 import Image from "next/image";
@@ -17,10 +14,44 @@ import {
   Zap, 
   ShieldCheck, 
   Globe,
-  Factory
+  Factory,
+  type LucideIcon
 } from "lucide-react";
 
 import { siteConfig } from "@/site.config";
+
+const applications: { title: string; icon: LucideIcon; desc: string }[] = [
+  {
+    title: "Hardware Tools",
+    icon: Settings,
+    desc: "High-frequency heating for various industrial tools.",
+  },
+  {
+    title: "Auto Parts",
+    icon: Zap,
+    desc: "Precision heat treatment for critical automotive components.",
+  },
+  {
+    title: "Bearings & Metallurgy",
+    icon: ShieldCheck,
+    desc: "Reliable solutions for heavy machinery and metal processing.",
+  },
+  {
+    title: "Mining Machinery",
+    icon: Factory,
+    desc: "Robust equipment for demanding mining environments.",
+  },
+  {
+    title: "Global Export",
+    icon: Globe,
+    desc: "Serving customers in over 50 countries worldwide.",
+  },
+  {
+    title: "Technical Support",
+    icon: CheckCircle2,
+    desc: "Expert technical services and customized designs.",
+  },
+];
 
 export default function Home() {
   return (
@@ -47,12 +78,20 @@ export default function Home() {
               integrating research, design, and technical services for global manufacturers.
             </p>
             <div className="flex flex-wrap gap-4 pt-4">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white border-none h-14 px-8 text-lg" asChild>
+              <Button
+                size="lg"
+                className="h-14 border border-blue-500 bg-blue-600 px-8 text-lg text-white shadow-lg shadow-blue-950/30 hover:bg-blue-700 hover:text-white"
+                asChild
+              >
                 <Link href="/posts/categories">
                   Explore Products <ArrowRight className="ml-2" size={20} />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-white border-slate-700 hover:bg-slate-800 h-14 px-8 text-lg" asChild>
+              <Button
+                size="lg"
+                className="h-14 border border-blue-500 bg-blue-600 px-8 text-lg text-white shadow-lg shadow-blue-950/30 hover:bg-blue-700 hover:text-white"
+                asChild
+              >
                 <Link href="/pages/about-us">
                   Learn About Us
                 </Link>
@@ -146,17 +185,10 @@ export default function Home() {
           </div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { title: "Hardware Tools", icon: <Settings />, desc: "High-frequency heating for various industrial tools." },
-              { title: "Auto Parts", icon: <Zap />, desc: "Precision heat treatment for critical automotive components." },
-              { title: "Bearings & Metallurgy", icon: <ShieldCheck />, desc: "Reliable solutions for heavy machinery and metal processing." },
-              { title: "Mining Machinery", icon: <Factory />, desc: "Robust equipment for demanding mining environments." },
-              { title: "Global Export", icon: <Globe />, desc: "Serving customers in over 50 countries worldwide." },
-              { title: "Technical Support", icon: <CheckCircle2 />, desc: "Expert technical services and customized designs." }
-            ].map((app, idx) => (
+            {applications.map((app, idx) => (
               <div key={idx} className="bg-white p-8 rounded-xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
                 <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                  {React.cloneElement(app.icon as React.ReactElement, { size: 24 })}
+                  <app.icon size={24} />
                 </div>
                 <h4 className="text-xl font-bold text-slate-900 mb-3">{app.title}</h4>
                 <p className="text-slate-600 leading-relaxed">{app.desc}</p>
